@@ -1,0 +1,4 @@
+node_modules/*
+buildbot_vue_plugin_boilerplate/*
+!/buildbot_vue_plugin_boilerplate/__init__.py
+buildbot_vue_plugin_boilerplate.egg-info/*
