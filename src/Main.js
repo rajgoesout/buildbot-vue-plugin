@@ -1,38 +1,32 @@
-// import { SampleReactComponent } from "./SampleReactComponent"
-// import * as React from 'react';
-// import * as ReactDOM from 'react-dom';
-import Vue from 'vue';
-// import { Hello } from './Hello.vue';
-// import SampleVueComponent from './SampleVueComponent'
+import Vue from 'vue'
+import { Hello } from './Hello'
 
-console.log("Hello from Rajdeep's Vue Buildbot!");
+console.log('Hello from the buildbot-vue-plugin-boilerplate!')
 
-// Register new module
-class VuePluginBoilerplate {
-  constructor() {
-    return [
-      'ui.router',
-      'ui.bootstrap',
-      'ui.bootstrap.popover',
-      'ngAnimate',
-      'guanlecoja.ui',
-      'bbData'
-    ];
-  }
-}
-
-class VuePluginBoilerplateConfig {
-  constructor(
+var module = angular.module('buildbot_vue_plugin_boilerplate', [
+  'ui.router',
+  'ui.bootstrap',
+  'ui.bootstrap.popover',
+  'ngAnimate',
+  'guanlecoja.ui',
+  'bbData'
+])
+module.config([
+  '$stateProvider',
+  'glMenuServiceProvider',
+  'bbSettingsServiceProvider',
+  'config',
+  (
     $stateProvider,
     glMenuServiceProvider,
     bbSettingsServiceProvider,
     config
-  ) {
+  ) => {
     // Config object coming in from the master.cfg
-    //console.log( "config", config )
+    // console.log('config', config)
 
     // Name of the state
-    const name = 'VuePluginBoilerplate';
+    const name = 'vuePluginBoilerplate'
 
     // Menu configuration
     glMenuServiceProvider.addGroup({
@@ -40,44 +34,48 @@ class VuePluginBoilerplateConfig {
       caption: 'Vue Plugin Boilerplate',
       icon: 'question-circle',
       order: 0
-    });
+    })
 
     // Configuration
     const cfg = {
       group: name,
       caption: 'Vue Plugin Boilerplate'
-    };
+    }
 
     // Register new state
     const state = {
-      controller: 'VuePluginBoilerplateController',
-      controllerAs: 'c',
-      template: "<div id='vueContent'></div>",
-      //templateUrl: `vue_plugin_boilerplate/views/${name}.html`,
+      template: '<my-vue-directive></my-vue-directive>',
+      // templateUrl: `vue_plugin_boilerplate/views/${name}.html`,
       name,
-      url: '/VuePluginBoilerplate',
+      url: '/vuePluginBoilerplate',
       data: cfg
-    };
+    }
 
-    $stateProvider.state(state);
+    $stateProvider.state(state)
 
     // bbSettingsServiceProvider.addSettingsGroup({
-    //     name: 'VuePluginBoilerplate',
-    //     caption: 'Vue Plugin Boilerplate related settings',
-    //     items: [{
-    //         type: 'integer',
-    //         name: 'buildLimit',
-    //         caption: 'Number of builds to fetch',
-    //         default_value: 500
+    //   name: 'vuePluginBoilerplate',
+    //   caption: 'Vue Plugin Boilerplate related settings',
+    //   items: [
+    //     {
+    //       type: 'integer',
+    //       name: 'buildLimit',
+    //       caption: 'Number of builds to fetch',
+    //       default_value: 500
     //     }
-    //     ]});
+    //   ]
+    // })
   }
-}
-
-class VuePluginBoilerplateController {
-  constructor(
-    $scope,
-    $element,
+])
+module.directive('myVueDirective', [
+  '$q',
+  '$window',
+  'dataService',
+  'bbSettingsService',
+  'resultsService',
+  '$uibModal',
+  '$timeout',
+  (
     $q,
     $window,
     dataService,
@@ -85,105 +83,57 @@ class VuePluginBoilerplateController {
     resultsService,
     $uibModal,
     $timeout
-  ) {
-    // Find the div.vueContent in the template (note, this is some kind
-    //  of angular data structure, not an actual dom element.
-    const vueContentElement = $element.find('#vueContent');
-    // This is an actual DOM element that React needs
-    this.vueRawElement = angular.element(vueContentElement).get(0);
+  ) => {
+    function link(scope, element, attrs) {
+      console.log(element, element.get(0))
+      console.log(scope)
 
-    this.dataAccessor = dataService.open().closeOnDestroy($scope);
+      /* create an instance of the data accessor */
+      var dataAccessor = dataService.open().closeOnDestroy(scope)
 
-    this.changeLimit = 50;
-
-    this.changes = this.dataAccessor.getChanges({
-      limit: this.changeLimit,
-      order: '-changeid'
-    });
-
-    this.changes.onChange = () => this.update();
-
-    this.renderVue();
-  }
-
-  update() {
-    console.log('Updating Vue View');
-
-    // your plugin might do some stuff in here to massage the data into a more
-    //  view-amenable form before calling the render function
-
-    this.renderVue();
-  }
-
-  renderVue() {
-    var props = { changes: this.changes };
-
-    // ReactDOM.render(
-    //     React.createElement(SampleReactComponent, props, null),
-    //       this.vueRawElement
-    // );
-
-    // const VC = Vue.extend({
-    //   template: '<p>ahdjahdajhd</p>'
-    // });
-
-    var SampleComp = {
-      render: function(createElement) {
-        return createElement('h1', 'some text');
+      /* get some changes and put the in the vue properties */
+      var changes = dataAccessor.getChanges({
+        limit: 50,
+        order: '-changeid'
+      })
+      var props = {
+        changes: changes
       }
-    };
-    new Vue({
-      el: this.vueRawElement,
-      components: {
-        SampleComp
-      },
-      template: '<p>hullo!</p>',
-      created: function() {
-        console.log('created');
-      },
-      beforeCreate() {
-        console.log('before create');
-      },
-      beforeMount: function() {
-        console.log('before mount');
-      },
-      mounted: function() {
-        console.log('mounted');
-      }
-    });
+      console.log(props)
 
-    // var Profile = Vue.extend({
-    //   template: '<p>{{firstName}} {{lastName}} aka {{alias}}</p>',
-    //   data: function() {
-    //     return {
-    //       firstName: 'Walter',
-    //       lastName: 'White',
-    //       alias: 'Heisenberg'
-    //     };
-    //   }
-    // });
-    // new Profile().$mount(this.vueRawElement);
+      var vue_element = new Vue({
+        el: element.get(0),
+        components: {
+          Hello
+        }
+      })
+
+      // var SampleVueComponent = Vue.component({})
+
+      // new Vue({
+      //   el: element.get(0),
+      //   props: props,
+      //   template: '<div>lol</div>'
+      // })
+
+      // new Vue({
+      //   el: element.get(0),
+      //   created() {
+      //     console.log('created')
+      //   },
+      //   props: props,
+      //   components: {
+      //     SampleVueComponent
+      //   },
+      //   template: '<my-vue-directive><p>okkkk</p></my-vue-directive>'
+      // })
+      // new Vue({
+      //   render: h => h(SampleVueComponent)
+      // }).$mount('#app')
+    }
+
+    return {
+      link: link
+    }
   }
-}
-
-angular
-  .module('buildbot_vue_plugin_boilerplate', new VuePluginBoilerplate())
-  .config([
-    '$stateProvider',
-    'glMenuServiceProvider',
-    'bbSettingsServiceProvider',
-    'config',
-    VuePluginBoilerplateConfig
-  ])
-  .controller('VuePluginBoilerplateController', [
-    '$scope',
-    '$element',
-    '$q',
-    '$window',
-    'dataService',
-    'bbSettingsService',
-    'resultsService',
-    '$uibModal',
-    '$timeout',
-    VuePluginBoilerplateController
-  ]);
+])

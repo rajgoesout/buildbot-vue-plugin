@@ -1,28 +1,28 @@
-var path = require('path');
-var CopyWebpackPlugin = require('copy-webpack-plugin');
+var path = require('path')
+var CopyWebpackPlugin = require('copy-webpack-plugin')
 var TsConfigPathsPlugin = require('awesome-typescript-loader')
-  .TsConfigPathsPlugin;
-var BitBarWebpackProgressPlugin = require('bitbar-webpack-progress-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
+  .TsConfigPathsPlugin
+var BitBarWebpackProgressPlugin = require('bitbar-webpack-progress-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin')
 
-// const VueLoaderPlugin = require('vue-loader/lib/plugin');
+// const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 const extractLess = new ExtractTextPlugin({
   filename: 'styles.css'
   // might want to use style-loader for development?
   //   it lets you hot-reload styles? If so, this next commented line prevents styles.css from getting built statically.
-  // disable: process.env.NODE_ENV === "development"
-});
+  // disable: process.env.NODE_ENV === 'development'
+})
 
 function isExternal(module) {
-  var context = module.context;
+  var context = module.context
 
   if (typeof context !== 'string') {
-    return false;
+    return false
   }
 
-  return context.indexOf('node_modules') !== -1;
+  return context.indexOf('node_modules') !== -1
 }
 
 module.exports = {
@@ -37,18 +37,18 @@ module.exports = {
   plugins: [
     // Separate "vendors" bundle for external libraries?
     // new CommonsChunkPlugin({
-    //     name: 'vendors',
-    //     minChunks: function(module) {
-    //         return isExternal(module);
-    //     }
+    //   name: 'vendors',
+    //   minChunks: function(module) {
+    //     return isExternal(module)
+    //   }
     // }),
 
     // might want to add something like this for copying assets like images, but to where?
     // new CopyWebpackPlugin([
-    //     // Copy over React and any other node modules which are not being bundled by webpack.
-    //     //  (we avoid bundling them to enable browser caching and decrease reload times.)
-    //     { from: 'assets', to: 'build/static/assets'},
-    //     ]),
+    //   // Copy over React and any other node modules which are not being bundled by webpack.
+    //   //  (we avoid bundling them to enable browser caching and decrease reload times.)
+    //   { from: 'assets', to: 'build/static/assets' }
+    // ]),
     // new VueLoaderPlugin(),
     new BitBarWebpackProgressPlugin(),
     extractLess
@@ -103,24 +103,25 @@ module.exports = {
           fallback: 'style-loader'
         })
       }
-    //   {
-    //     test: /\.vue$/,
-    //     loader: 'vue-loader'
-    //   },
-    //   {
-    //     test: /\.js$/,
-    //     loader: 'vue-loader'
-    //   }
-
       // {
-      //     test: /.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
-      //     //use: "url-loader?limit=100000"
-      //     use: [ {
-      //         loader: "file-loader",
-      //         options: {
-      //             outputPath: "build/static/assets/"
-      //         }
-      //     }]
+      //   test: /\.vue$/,
+      //   loader: 'vue-loader'
+      // },
+      // {
+      //   test: /\.js$/,
+      //   loader: 'vue-loader'
+      // },
+      // {
+      //   test: /.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
+      //   //use: "url-loader?limit=100000"
+      //   use: [
+      //     {
+      //       loader: 'file-loader',
+      //       options: {
+      //         outputPath: 'build/static/assets/'
+      //       }
+      //     }
+      //   ]
       // }
     ]
   }
@@ -130,11 +131,11 @@ module.exports = {
   // This is important because it allows us to avoid bundling all of our
   // dependencies, which allows browsers to cache those libraries between builds.
   // externals: {
-  //     "react": "React",
-  //     "react-dom": "ReactDOM"
+  //   react: 'React',
+  //   'react-dom': 'ReactDOM'
   // },
 
   // node: {
-  //    fs: "empty"
-  // },
-};
+  //   fs: 'empty'
+  // }
+}
