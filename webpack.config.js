@@ -5,8 +5,7 @@ var TsConfigPathsPlugin = require('awesome-typescript-loader')
 var BitBarWebpackProgressPlugin = require('bitbar-webpack-progress-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin')
-
-// const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 const extractLess = new ExtractTextPlugin({
   filename: 'styles.css'
@@ -51,6 +50,7 @@ module.exports = {
     // ]),
     // new VueLoaderPlugin(),
     new BitBarWebpackProgressPlugin(),
+    new VueLoaderPlugin(),
     extractLess
   ],
 
@@ -60,11 +60,17 @@ module.exports = {
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
     extensions: ['.ts', '.tsx', '.js', '.json', '.vue'],
-    plugins: [new TsConfigPathsPlugin(/* { tsconfig, compiler } */)]
+    plugins: [new TsConfigPathsPlugin(/* { tsconfig, compiler } */)],
+    alias: {
+      vue$: 'vue/dist/vue.esm.js' // 'vue/dist/vue.common.js' for webpack 1
+    }
   },
 
   module: {
     rules: [
+      // all files ending with ".vue" are loaded using vue-loader
+      { test: /\.vue$/, loader: 'vue-loader' },
+
       {
         // JS LOADER
         // Reference: https://github.com/babel/babel-loader
@@ -86,7 +92,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
+        use: ['vue-style-loader', 'css-loader']
       },
       {
         test: /\.less$/,

@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Hello } from './Hello'
+import SampleVueComponent from './SampleVueComponent.vue'
 
 console.log('Hello from the buildbot-vue-plugin-boilerplate!')
 
@@ -85,9 +85,6 @@ module.directive('myVueDirective', [
     $timeout
   ) => {
     function link(scope, element, attrs) {
-      console.log(element, element.get(0))
-      console.log(scope)
-
       /* create an instance of the data accessor */
       var dataAccessor = dataService.open().closeOnDestroy(scope)
 
@@ -97,39 +94,21 @@ module.directive('myVueDirective', [
         order: '-changeid'
       })
       var props = {
-        changes: changes
+        changes
       }
-      console.log(props)
 
-      var vue_element = new Vue({
-        el: element.get(0),
-        components: {
-          Hello
-        }
+      var ComponentClass = Vue.extend(SampleVueComponent)
+      /* cannot pass directly the changes, as the magic of buildbot 
+          data module clashes with the magic of vue observers */
+      var data = { changes: [] }
+      var e = new ComponentClass({
+        data: data,
+        el: element.get(0)
       })
-
-      // var SampleVueComponent = Vue.component({})
-
-      // new Vue({
-      //   el: element.get(0),
-      //   props: props,
-      //   template: '<div>lol</div>'
-      // })
-
-      // new Vue({
-      //   el: element.get(0),
-      //   created() {
-      //     console.log('created')
-      //   },
-      //   props: props,
-      //   components: {
-      //     SampleVueComponent
-      //   },
-      //   template: '<my-vue-directive><p>okkkk</p></my-vue-directive>'
-      // })
-      // new Vue({
-      //   render: h => h(SampleVueComponent)
-      // }).$mount('#app')
+      function update() {
+        data.changes = changes.slice()
+      }
+      changes.onChange = () => update()
     }
 
     return {
