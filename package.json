@@ -4,12 +4,14 @@
   "description": "Boilerplate code to make a UI plugin for Buildbot, using Vue and Webpack.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "webpack --watch",
+    "build": "webpack"
   },
   "author": "Rajdeep Bharati",
   "license": "ISC",
   "dependencies": {
     "vue": "^2.6.10",
+    "vue-class-component": "^7.0.1",
     "vue-custom-element": "^3.2.6"
   },
   "devDependencies": {
