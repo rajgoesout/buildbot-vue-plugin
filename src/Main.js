@@ -1,5 +1,8 @@
 import Vue from 'vue'
 import SampleVueComponent from './SampleVueComponent.vue'
+import CommitList from './CommitList.vue'
+import Commit from './Commit.vue'
+import BuildHistory from './BuildHistory.vue'
 
 console.log('Hello from the buildbot-vue-plugin-boilerplate!')
 
@@ -87,20 +90,31 @@ module.directive('myVueDirective', [
     function link(scope, element, attrs) {
       /* create an instance of the data accessor */
       var dataAccessor = dataService.open().closeOnDestroy(scope)
+      console.log(dataAccessor)
 
       /* get some changes and put the in the vue properties */
       var changes = dataAccessor.getChanges({
-        limit: 50,
+        limit: 10000,
         order: '-changeid'
       })
+      var builds = dataAccessor.getBuilds({
+        limit: 50,
+        order: '-buildid'
+      })
+      var builders = dataAccessor.getBuilders({
+        limit: 50,
+        order: '-builderid'
+      })
       var props = {
-        changes
+        maxDate: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0),
+        changes,
+        builds,
+        builders
       }
-
-      var ComponentClass = Vue.extend(SampleVueComponent)
+      var ComponentClass = Vue.extend(CommitList)
       /* cannot pass directly the changes, as the magic of buildbot 
           data module clashes with the magic of vue observers */
-      var data = { changes: [] }
+      var data = { changes: [], builds: [], builders: [] }
       var e = new ComponentClass({
         data: data,
         el: element.get(0)
