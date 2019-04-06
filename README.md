@@ -1,17 +1,19 @@
-# buildbot-vue-plugin-boilerplate
+# buildbot-vue-plugin
 
-Boilerplate setup for a buildbot plugin using Vue, Webpack and Plain JS or Typescript
+Setup for a buildbot plugin using Vue, Webpack and Plain JS or Typescript
+
+**This is based on https://github.com/uglycoyote/buildbot-react-plugin-boilerplate**
 
 ## Synopsis
 
-install:
+Install:
 
 ```
 npm install
 pip install -e . # this should run webpack automatically
 ```
 
-iterate:
+Iterate:
 
 ```
 npm run watch
@@ -60,11 +62,15 @@ install these things if you don't have them already
 
 make a clone of buildbot sources
 
-`git clone https://github.com/bb-nl/buildbot.git`
+```
+git clone https://github.com/buildbot/buildbot.git
+```
 
 outside of that directory, make a virtualenv sandbox directory. All `pip install`s will install into that directory rather than the global python libs directory.
 
-`virtualenv sandbox`
+```
+virtualenv sandbox
+```
 
 Whenever you are developing buildbot you must **activate** the sandbox
 
@@ -95,9 +101,11 @@ browse to http://localhost:8080 and you should see buildbot's web interface runn
 
 ### Setting up your new Plugin
 
-get this repo
+Get the boilerplate repo
 
-`git clone https://github.com/uglycoyote/buildbot-react-plugin-boilerplate.git`
+```
+git clone https://github.com/uglycoyote/buildbot-react-plugin-boilerplate.git
+```
 
 change everywhere the name of this plugin occurs to whatever you want to call your new plugin. You probably want to do this before you `pip install` the thing, at least the parts which are going to influence the python name of the plugin (names on the javascript side can be changed after you have it working). The names relevant to python are
 
