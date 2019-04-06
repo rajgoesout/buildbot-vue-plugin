@@ -12,7 +12,7 @@
   "dependencies": {
     "@northwalker/vue-hotel-datepicker": "^2.0.1",
     "vue": "^2.6.10",
-    "vue-class-component": "^7.0.1",
+    "vue-class-component": "^7.0.2",
     "vue-loader": "^15.7.0",
     "vue-template-compiler": "^2.6.10",
     "vuejs-datepicker": "^1.5.4"
