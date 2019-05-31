@@ -1,8 +1,8 @@
 import Vue from 'vue'
-import SampleVueComponent from './SampleVueComponent.vue'
-import CommitList from './CommitList.vue'
-import Commit from './Commit.vue'
-import BuildHistory from './BuildHistory.vue'
+import SampleVueComponent from './components/SampleVueComponent.vue'
+import ChangesList from './components/ChangesList.vue'
+import Change from './components/Change.vue'
+import BuildHistory from './components/BuildHistory.vue'
 
 console.log('Hello from the buildbot-vue-plugin-boilerplate!')
 
@@ -152,7 +152,7 @@ module.directive('myVueDirective', [
         sourcestamps
       }
 
-      var ComponentClass = Vue.extend(CommitList)
+      var ComponentClass = Vue.extend(ChangesList)
 
       /* cannot pass the changes directly, as the magic of buildbot 
           data module clashes with the magic of vue observers */

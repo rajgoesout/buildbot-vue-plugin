@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Showing {{changes.length}} changes:</p>
+    <p>Showing {{ changes.length }} changes:</p>
     <table>
       <thead>
         <tr>
@@ -12,14 +12,14 @@
       </thead>
       <tbody>
         <tr v-for="change in changes" :key="change.id">
-          <td key="revision">{{change.revision}}</td>
-          <td key="author">{{change.author}}</td>
-          <td key="comments">{{change.comments}}</td>
+          <td key="revision">{{ change.revision }}</td>
+          <td key="author">{{ change.author }}</td>
+          <td key="comments">{{ change.comments }}</td>
           <td key="files">
             <ul>
-              <li v-for="file in change.files" :key="file">{{file}}</li>
+              <li v-for="file in change.files" :key="file">{{ file }}</li>
             </ul>
-            <span v-if="change.files.length==0">None</span>
+            <span v-if="change.files.length == 0">None</span>
           </td>
         </tr>
       </tbody>
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-module.exports = {};
+module.exports = {}
 </script>
 
 <style scoped>
