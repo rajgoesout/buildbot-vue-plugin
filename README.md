@@ -2,7 +2,7 @@
 
 Setup for a buildbot plugin using Vue, Webpack and Plain JS or Typescript
 
-**This is based on https://github.com/uglycoyote/buildbot-react-plugin-boilerplate**
+**This is based on the [boilerplate setup by uglycoyote](https://github.com/uglycoyote/buildbot-react-plugin-boilerplate).**
 
 ## Synopsis
 
@@ -23,8 +23,6 @@ npm run watch
 
 The tech used for the Buildbot 9 web UI is already starting to show its age. Currently it is using:
 
-- **gulp** as a build system
-- **coffeescript** as an alternative to javascript
 - **AngularJS** which has been superceded by Angular 2, which is nearly a full rewrite
 
 The idea behind this repo is to establish a way to use newer web tech for your buildbot plugin, even though buildbot is (for now at least) sticking with these older technologies. It's totally possible to mix the new and the old.
@@ -40,8 +38,6 @@ This plugin sample is using:
 ## Developing A Buildbot Plugin Locally
 
 You _could_ develop your new plugin directly on your buildbot server, but you may not want to for various reasons. Fortunately there's a good workflow where you can develop locally using data from a remote server.
-
-In my case, I'm developing my plugin on a Windows machine for deployment to a buildbot server that's running Ubuntu, so it's possible to develop in whatever OS environment you are comfortable.
 
 These notes are somewhat based on [Pierre Tardy's tutorial](https://medium.com/buildbot/buildbot-ui-plugin-for-python-developer-ef9dcfdedac0), also on [Running buildbot with VirtualEnv](http://trac.buildbot.net/wiki/RunningBuildbotWithVirtualEnv)
 
@@ -60,28 +56,17 @@ install these things if you don't have them already
 
 ### Set up Buildbot for local development
 
-make a clone of buildbot sources
+Clone buildbot sources
 
 ```
 git clone https://github.com/buildbot/buildbot.git
-```
-
-outside of that directory, make a virtualenv sandbox directory. All `pip install`s will install into that directory rather than the global python libs directory.
-
-```
-virtualenv sandbox
+cd buildbot
+make virtualenv
 ```
 
 Whenever you are developing buildbot you must **activate** the sandbox
 
-`source sandbox/bin/activate` (or, on windows, `sandbox\Scripts\activate`)
-
-With the sandbox activated, `cd` into the `buildbot` directory that you cloned and install `master` and `worker`
-
-```
-pip install -e master
-pip install -e worker
-```
+`source .venv/bin/activate` (or, on windows, `.venv\Scripts\activate`)
 
 Build buildbot's frontend from sources
 
@@ -93,25 +78,25 @@ Windows-specific note: needed to `pip install pypiwin32` before this worked.
 
 When developing locally, cd into `www/base` in the buildbot sources directory, and run
 
-`gulp dev proxy --host nine.buildbot.net`
+`yarn run dev`
 
 (replace nine.buildbot.net with your own buildbot server if you like)
 
-browse to http://localhost:8080 and you should see buildbot's web interface running with the information from the server you are proxying.
+browse to http://localhost:8010 and you should see buildbot's web interface running with the information from the server you are proxying.
 
 ### Setting up your new Plugin
 
 Get the boilerplate repo
 
 ```
-git clone https://github.com/uglycoyote/buildbot-react-plugin-boilerplate.git
+git clone https://github.com/rajdeepbharati/buildbot-vue-plugin.git
 ```
 
 change everywhere the name of this plugin occurs to whatever you want to call your new plugin. You probably want to do this before you `pip install` the thing, at least the parts which are going to influence the python name of the plugin (names on the javascript side can be changed after you have it working). The names relevant to python are
 
 - any occurrences in setup.py
-- the subdirectory `buildbot_react_plugin_boilerplate`, containing the `__init__.py file`
-- in the `webpack.config.js` change the line `path: path.resolve(__dirname, "./buildbot_react_plugin_boilerplate/static")`
+- the subdirectory `buildbot_vue_plugin_boilerplate`, containing the `__init__.py file`
+- in the `webpack.config.js` change the line `path: path.resolve(__dirname, "./buildbot_vue_plugin_boilerplate/static")`
 
 **Attention:** although the repo is named with hypens separating the words (as per javascript/npm convention), the python package names/identifiers are using underbars as separators (as per python convention)
 
@@ -123,14 +108,14 @@ pip install -e .
 npm run watch
 ```
 
-Because we are using `gulp dev proxy`, the proxy uses all the plugin available in the virtualenv to build the UI, so `pip install` is only needed to start working (and restart `gulp dev proxy`).
+Because we are using `yarn run dev`, the proxy uses all the plugin available in the virtualenv to build the UI, so `pip install` is only needed to start working (and restart `yarn run dev`).
 When running in a real buildbot, you need to change the master.cfg to configure your plugin
 
 ```python
-  c['www']['plugins']['buildbot_react_plugin_boilerplate'] = {}
+  c['www']['plugins']['buildbot_vue_plugin_boilerplate'] = {}
 ```
 
-`buildbot_react_plugin_boilerplate` being the name of the `www entry_point` in `setup.py`
+`buildbot_vue_plugin_boilerplate` being the name of the `www entry_point` in `setup.py`
 
 ### Fixing up Javascript to use your own plugin name
 
