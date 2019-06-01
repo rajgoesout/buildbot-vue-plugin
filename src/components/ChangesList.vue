@@ -5,14 +5,13 @@
     <button @click="changeDir">{{ buttonTxt }}</button>
     <h2 v-if="before">Showing all changes before {{ dt(rdate) }}</h2>
     <h2 v-else>Showing all changes after {{ dt(rdate) }}</h2>
-    <modals-container />
     <!-- <VueHotelDatepicker :minDate="minDate" :maxDate="maxDate" /> -->
     <table>
       <thead>
         <tr>
           <th>Build Status</th>
           <th>Timestamp</th>
-          <th>Comment</th>
+          <th>Comments</th>
           <th>Committer</th>
           <th>Author</th>
           <th>Details</th>
@@ -60,10 +59,28 @@
 
 <script>
 import Vue from 'vue'
+import Router from 'vue-router'
 import VueHotelDatepicker from '@northwalker/vue-hotel-datepicker'
 import Datepicker from 'vuejs-datepicker'
 import VModal from 'vue-js-modal'
 import Change from './Change'
+
+Vue.use(Router)
+
+var router = new Router({
+  mode: 'history',
+  routes: [
+    // {
+    //   path: '/',
+    //   component: ChangesList
+    // },
+    {
+      path: '/change/:id',
+      component: Change,
+      meta: { showModal: true }
+    }
+  ]
+})
 
 Vue.use(VModal, {
   dynamic: true,
@@ -111,27 +128,27 @@ export default {
       this.$modal.show(
         Change,
         {
+          changes: this.$data.changes,
           change: change,
+          builders: this.$data.builders,
+          builds: this.$data.builds,
+          buildrequests: this.$data.buildrequests,
+          buildsets: this.$data.buildsets,
+          // changesBySSID: {},
+          // changesByRevision: {},
           buttons: [
-            {
-              title: 'Deal with it',
-              handler: () => {
-                alert('Woot!')
-              }
-            },
-            {
-              title: '', // Button title
-              default: true, // Will be triggered by default if 'Enter' pressed.
-              handler: () => {} // Button click handler
-            },
             {
               title: 'Close'
             }
           ]
         },
-        { draggable: true },
-        { scrollable: true },
-        { height: '600px' }
+        {
+          width: 1000,
+          height: 'auto',
+          pivotX: 0.8,
+          scrollable: true,
+          resizable: true
+        }
       )
     },
     hide() {

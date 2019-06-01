@@ -107,7 +107,7 @@ module.directive('myVueDirective', [
       })
       var builds = dataAccessor.getBuilds({
         limit: settings.buildLimit.value,
-        order: '-buildid'
+        order: '-started_at'
       })
       var buildrequests = dataAccessor.getBuildrequests({
         limit: settings.buildLimit.value,
