@@ -1,37 +1,49 @@
 <template>
   <div class="change-modal">
-    <a class="heading" v-bind:href="$attrs.change.revlink" target="_blank">{{
-      $attrs.change.comments.split('\n')[0]
-    }}</a>
-    <br />
-    <strong> Author:</strong> {{ $attrs.change.author }}
-    <br />
-    <strong>Timestamp:</strong> {{ dt($attrs.change.when_timestamp) }}
-    <br />
-    <strong>Comments:</strong>
-    <br />
-    <div
-      class="comments"
-      v-for="line in $attrs.change.comments.split('\n')"
-      :key="line.length"
-    >
-      <div class="" v-html="createLinks(line)"></div>
+    <div class="modal-header">
+      <button
+        @click="$emit('close')"
+        type="button"
+        class="close"
+        data-dismiss="modal"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <h3 class="modal-title">
+        <a v-bind:href="$attrs.change.revlink" target="_blank">{{
+          $attrs.change.comments.split('\n')[0]
+        }}</a>
+      </h3>
     </div>
-    <strong>Changed files:</strong>
-    <br />
-    <div v-for="file in $attrs.change.files" :key="file">{{ file }}</div>
-    <strong>Builders:</strong><br />
-    <!-- <p>{{ _onChange() }}</p> -->
-    <div v-for="builder in $attrs.builders" :key="builder.builderid">
-      {{ builder.name }} {{ builder.builds }}
+    <div class="modal-body">
+      <h4>Author:</h4>
+      {{ $attrs.change.author }}
+      <h4>Timestamp:</h4>
+      {{ dt($attrs.change.when_timestamp) }}
+      <h4>Comments:</h4>
+      <code>
+        <div
+          class="comments"
+          v-for="line in $attrs.change.comments.split('\n')"
+          :key="line.length"
+        >
+          <div v-html="createLinks(line)"></div>
+        </div>
+      </code>
+      <h4>Changed files:</h4>
+      <div v-for="file in $attrs.change.files" :key="file">{{ file }}</div>
+      <h4>Builders:</h4>
+      <!-- <p>{{ _onChange() }}</p> -->
+      <div v-for="builder in $attrs.builders" :key="builder.builderid">
+        {{ builder.name }} {{ builder.builds }}
+      </div>
+      <!-- <div v-for="bbid in $attrs.change.buildersById" :key="bbid.builderid">
+        {{ bbid.name }}
+        {{ bbid }}
+        {{ populateChange($attrs.change) }}
+      </div> -->
     </div>
-    <!-- <div v-for="bbid in $attrs.change.buildersById" :key="bbid.builderid">
-      {{ bbid.name }}
-      {{ bbid }}
-      {{ populateChange($attrs.change) }}
-    </div> -->
-    <br />
-    <div class="close-btn" @click="$emit('close')">❌</div>
   </div>
 </template>
 
@@ -209,16 +221,10 @@ export default {
 .change-modal {
   margin: 12px;
 }
-.heading {
-  font-size: 20px;
-}
-.close-btn {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-}
 .comments {
-  background-color: azure;
-  padding: 2px 2px 4px 8px;
+  padding: 0px 0px 0px 8px;
+}
+.modal-body {
+  font-size: 15px;
 }
 </style>

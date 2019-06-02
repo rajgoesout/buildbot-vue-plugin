@@ -12,8 +12,11 @@
   "dependencies": {
     "@northwalker/vue-hotel-datepicker": "^2.0.1",
     "autolinker": "^3.0.5",
+    "bootstrap": "^4.3.1",
     "cryptiles": ">=4.1.2",
     "hoek": ">=4.2.1",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.15.0",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.1",
     "vue-js-modal": "^1.3.31",

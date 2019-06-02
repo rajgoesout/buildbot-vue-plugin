@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import Router from 'vue-router'
 import SampleVueComponent from './components/SampleVueComponent.vue'
 import ChangesList from './components/ChangesList.vue'
 import Change from './components/Change.vue'
@@ -152,6 +153,31 @@ module.directive('myVueDirective', [
         sourcestamps
       }
 
+      Vue.use(Router)
+
+      const router = new Router({
+        routes: [
+          {
+            path: '#/vuePluginBoilerplate',
+            component: ChangesList
+          },
+          // {
+          //   path: '/vuePluginBoilerplate/change/:id',
+          //   name: 'change',
+          //   component: {
+          //     props: ['id'],
+          //     template: '<div>change {{ id }}</div>'
+          //   },
+          //   props: true
+          // },
+          {
+            path: '/vuePluginBoilerplate/change/:id',
+            name: 'change',
+            component: Change
+          }
+        ]
+      })
+
       var ComponentClass = Vue.extend(ChangesList)
 
       /* cannot pass the changes directly, as the magic of buildbot 
@@ -168,6 +194,7 @@ module.directive('myVueDirective', [
       }
 
       var e = new ComponentClass({
+        router,
         data: data,
         el: element.get(0)
       })

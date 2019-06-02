@@ -6,6 +6,7 @@
     <h2 v-if="before">Showing all changes before {{ dt(rdate) }}</h2>
     <h2 v-else>Showing all changes after {{ dt(rdate) }}</h2>
     <!-- <VueHotelDatepicker :minDate="minDate" :maxDate="maxDate" /> -->
+    <router-view></router-view>
     <table>
       <thead>
         <tr>
@@ -31,7 +32,13 @@
             {{ change.author }}
           </td>
           <td v-if="change.when_timestamp < rdate" key="details">
-            <button v-on:click="show(change)">More</button>
+            <router-link
+              :to="{ name: 'change', params: { id: change.changeid } }"
+            >
+              <button class="btn btn-primary" v-on:click="show(change)">
+                More
+              </button>
+            </router-link>
           </td>
         </tr>
       </tbody>
@@ -49,7 +56,13 @@
             {{ change.author }}
           </td>
           <td v-if="change.when_timestamp > rdate" key="details">
-            <button v-on:click="show(change)">More</button>
+            <router-link
+              :to="{ name: 'change', params: { id: change.changeid } }"
+            >
+              <button class="btn btn-primary" v-on:click="show(change)">
+                More
+              </button>
+            </router-link>
           </td>
         </tr>
       </tbody>
@@ -64,23 +77,6 @@ import VueHotelDatepicker from '@northwalker/vue-hotel-datepicker'
 import Datepicker from 'vuejs-datepicker'
 import VModal from 'vue-js-modal'
 import Change from './Change'
-
-Vue.use(Router)
-
-var router = new Router({
-  mode: 'history',
-  routes: [
-    // {
-    //   path: '/',
-    //   component: ChangesList
-    // },
-    {
-      path: '/change/:id',
-      component: Change,
-      meta: { showModal: true }
-    }
-  ]
-})
 
 Vue.use(VModal, {
   dynamic: true,
@@ -148,6 +144,13 @@ export default {
           pivotX: 0.8,
           scrollable: true,
           resizable: true
+        },
+        {
+          'before-close': event => {
+            console.log('this will be called before the modal closes')
+            this.$router.go(-1)
+            this.$emit('close')
+          }
         }
       )
     },
