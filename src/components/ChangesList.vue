@@ -116,22 +116,17 @@ export default {
       )
     }
   },
-  // created: function() {
-  //   this.fetchData()
-  // },
   methods: {
     show(change) {
       this.$modal.show(
         Change,
         {
-          changes: this.$data.changes,
+          // changes: this.$data.changes,
           change: change,
           builders: this.$data.builders,
           builds: this.$data.builds,
           buildrequests: this.$data.buildrequests,
           buildsets: this.$data.buildsets,
-          // changesBySSID: {},
-          // changesByRevision: {},
           buttons: [
             {
               title: 'Close'
@@ -173,17 +168,6 @@ export default {
     },
     dt: function(timestamp) {
       return new Date(timestamp * 1000)
-    },
-    fetchData: function(revision) {
-      // var xhr = new XMLHttpRequest()
-      // var self = this
-      // xhr.open('GET', apiURL + revision)
-      // xhr.onload = function() {
-      //   self.commit = JSON.parse(xhr.responseText)
-      //   // alert(self.commit);
-      //   // console.log(self.commits[0].html_url);
-      // }
-      // xhr.send()
     }
   }
 }

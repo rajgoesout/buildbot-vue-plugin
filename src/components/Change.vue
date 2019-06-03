@@ -25,24 +25,30 @@
       <code>
         <div
           class="comments"
-          v-for="line in $attrs.change.comments.split('\n')"
-          :key="line.length"
+          v-for="(line, index) in $attrs.change.comments.split('\n')"
+          :key="index"
         >
           <div v-html="createLinks(line)"></div>
         </div>
       </code>
       <h4>Changed files:</h4>
-      <div v-for="file in $attrs.change.files" :key="file">{{ file }}</div>
-      <h4>Builders:</h4>
-      <!-- <p>{{ _onChange() }}</p> -->
-      <div v-for="builder in $attrs.builders" :key="builder.builderid">
-        {{ builder.name }} {{ builder.builds }}
+      <div v-for="file in $attrs.change.files" :key="file">
+        {{ file }}
       </div>
-      <!-- <div v-for="bbid in $attrs.change.buildersById" :key="bbid.builderid">
-        {{ bbid.name }}
-        {{ bbid }}
-        {{ populateChange($attrs.change) }}
-      </div> -->
+      <h4>Builds:</h4>
+      <div
+        v-for="(cbs, index) in map(
+          $attrs.change.changeid,
+          $attrs.change.sourcestamp.ssid
+        )"
+        :key="index"
+      >
+        <div v-if="cbs.buildid">
+          Buildid: {{ cbs.buildid }}, Builderid: {{ cbs.builderid }}, State:
+          {{ cbs.state_string }}
+        </div>
+        <div v-else>None</div>
+      </div>
     </div>
   </div>
 </template>
@@ -60,159 +66,91 @@ export default {
     }
   },
   methods: {
+    getResult: function(b) {
+      let result
+      if (!b.complete && b.started_at >= 0) {
+        result = 'pending'
+      } else {
+        switch (b.results) {
+          case 0:
+            result = 'success'
+            break
+          case 1:
+            result = 'warnings'
+            break
+          case 2:
+            result = 'failure'
+            break
+          case 3:
+            result = 'skipped'
+            break
+          case 4:
+            result = 'exception'
+            break
+          case 5:
+            result = 'cancelled'
+            break
+          default:
+            result = 'unknown'
+        }
+      }
+      return result
+    },
+    map: function(changeid, ssid) {
+      var buildsets = this.$attrs.buildsets
+      var builds = this.$attrs.builds
+      var changeBuildsets = []
+      for (const buildset of buildsets) {
+        for (const sourcestamp of buildset.sourcestamps) {
+          if (sourcestamp.ssid === ssid) {
+            buildset['changeid'] = changeid
+            changeBuildsets.push(buildset)
+          }
+        }
+      }
+      var buildrequests = this.$attrs.buildrequests
+      for (const buildrequest of buildrequests) {
+        for (const changeBuildset of changeBuildsets) {
+          if (changeBuildset.bsid === buildrequest.buildsetid) {
+            changeBuildset['buildrequestid'] = buildrequest.buildrequestid
+          }
+        }
+      }
+      for (const build of builds) {
+        for (const changeBuildset of changeBuildsets) {
+          if (changeBuildset.buildrequestid === build.buildrequestid) {
+            changeBuildset['buildid'] = build.buildid
+            changeBuildset['builderid'] = build.builderid
+            changeBuildset['state_string'] = build.state_string
+            changeBuildset['complete'] = build.complete
+            changeBuildset['complete_at'] = build.complete_at
+            changeBuildset['started_at'] = build.started_at
+            changeBuildset['results'] = build.results
+          }
+        }
+      }
+      this.$attrs.buildsforchange = changeBuildsets
+      // return [changeBuildsets[0].buildid, changeBuildsets[0].builderid]
+      var myarray = []
+      for (const cbs of changeBuildsets) {
+        myarray.push({
+          buildid: cbs.buildid,
+          builderid: cbs.builderid,
+          state_string: cbs.state_string,
+          complete: cbs.complete,
+          complete_at: cbs.complete_at,
+          started_at: cbs.started_at,
+          results: cbs.results
+        })
+      }
+      return myarray
+    },
     createLinks: function(text) {
       var linkedText = Autolinker.link(text)
       return linkedText
     },
     dt: function(timestamp) {
       return new Date(timestamp * 1000)
-    },
-    _onChange: function() {
-      let build, change
-      // this.onchange_debounce = undefined;
-      // we only display builders who actually have builds
-      // for (build of Array.from(this.builds)) {
-      //     this.all_builders.get(build.builderid).hasBuild = true;
-      // }
-
-      // this.sortBuildersByTags(this.all_builders);
-
-      if (this.$attrs.changesBySSID == null) {
-        this.$attrs.changesBySSID = {}
-      }
-      if (this.$attrs.changesByRevision == null) {
-        this.$attrs.changesByRevision = {}
-      }
-      for (change of Array.from(this.$attrs.changes)) {
-        this.$attrs.changesBySSID[change.sourcestamp.ssid] = change
-        this.$attrs.changesByRevision[change.revision] = change
-        this.populateChange(change)
-      }
-
-      for (build of Array.from(this.$attrs.builds)) {
-        this.matchBuildWithChange(build)
-      }
-
-      this.filtered_changes = []
-
-      for (let ssid in this.$attrs.changesBySSID) {
-        change = this.$attrs.changesBySSID[ssid]
-        if (change.comments) {
-          change.subject = change.comments.split('\n')[0]
-        }
-        for (let builder of Array.from(change.builders)) {
-          if (builder.builds.length > 0) {
-            this.filtered_changes.push(change)
-            break
-          }
-        }
-      }
-    },
-    /*
-     * fill a change with a list of builders
-     */
-    populateChange: function(change) {
-      change.builders = []
-      change.buildersById = {}
-      for (let builder of Array.from(this.$attrs.builders)) {
-        // if (builder.hasBuild) {
-        builder = {
-          builderid: builder.builderid,
-          name: builder.name,
-          builds: []
-        }
-        change.builders.push(builder)
-        change.buildersById[builder.builderid] = builder
-        // console.log(change)
-      }
-      // }
-    },
-    /*
-     * Match builds with a change
-     */
-    matchBuildWithChange: function(build) {
-      let change, revision
-      // const buildrequest = this.$attrs.buildrequests.get(build.buildrequestid)
-      const buildrequest = this.$attrs.buildrequests.filter(br => {
-        return br.buildrequestid === build.buildrequestid
-      })
-      if (buildrequest == null) {
-        return
-      }
-      // const buildset = this.$attrs.buildsets.get(buildrequest.buildsetid)
-      const buildset = this.$attrs.buildsets.filter(bs => {
-        return bs.buildsetid === buildrequest.buildsetid
-      })
-      if (buildset == null) {
-        return
-      }
-      if (buildset != null && buildset.sourcestamps != null) {
-        for (let sourcestamp of Array.from(buildset.sourcestamps)) {
-          change = this.$attrs.changesBySSID[sourcestamp.ssid]
-          if (change != null) {
-            break
-          }
-        }
-      }
-
-      if (
-        change == null &&
-        (build.properties != null
-          ? build.properties.got_revision
-          : undefined) != null
-      ) {
-        const rev = build.properties.got_revision[0]
-        // got_revision can be per codebase or just the revision string
-        if (typeof rev === 'string') {
-          change = this.$attrs.changesByRevision[rev]
-          if (change == null) {
-            change = this.makeFakeChange('', rev, build.started_at)
-          }
-        } else {
-          let codebase
-          for (codebase in rev) {
-            revision = rev[codebase]
-            change = this.$attrs.changesByRevision[revision]
-            if (change != null) {
-              break
-            }
-          }
-
-          if (change == null) {
-            revision = rev === {} ? '' : rev[rev.keys()[0]]
-            change = this.makeFakeChange(codebase, revision, build.started_at)
-          }
-        }
-      }
-
-      if (change == null) {
-        revision = `unknown revision ${build.builderid}-${build.buildid}`
-        change = this.makeFakeChange(
-          'unknown codebase',
-          revision,
-          build.started_at
-        )
-      }
-
-      return change.buildersById[build.builderid].builds.push(build)
-    },
-    makeFakeChange: function(codebase, revision, when_timestamp) {
-      let change = this.$attrs.changesBySSID[revision]
-      if (change == null) {
-        change = {
-          codebase,
-          revision,
-          changeid: revision,
-          when_timestamp,
-          author: `unknown author for ${revision}`,
-          comments:
-            revision +
-            '\n\nFake comment for revision: No change for this revision, please setup a changesource in Buildbot'
-        }
-        this.$attrs.changesBySSID[revision] = change
-        this.populateChange(change)
-      }
-      return change
     }
   }
 }
