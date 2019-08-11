@@ -1,5 +1,7 @@
 # buildbot-vue-plugin
 
+### Note: this project has been moved to https://github.com/macports/buildbot-macports-custom-views
+
 Setup for a buildbot plugin using Vue, Webpack and Plain JS or Typescript
 
 **This is based on https://github.com/uglycoyote/buildbot-react-plugin-boilerplate**
