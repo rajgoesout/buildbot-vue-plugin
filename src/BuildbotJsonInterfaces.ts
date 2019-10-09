@@ -3,7 +3,7 @@
 //  a bunch of buildbot JSON API url's and calls json2ts on them to output Typescript interface
 //  definitions)
 
-export interface Property {}
+export interface Property { }
 
 export interface Build {
   builderid: number
