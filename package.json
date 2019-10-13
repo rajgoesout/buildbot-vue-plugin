@@ -20,7 +20,7 @@
     "hoek": ">=4.2.1"
   },
   "devDependencies": {
-    "awesome-typescript-loader": "^3.2.3",
+    "awesome-typescript-loader": "^5.2.1",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.2",
     "bitbar-webpack-progress-plugin": "^0.1.3",
